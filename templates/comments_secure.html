@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comments - Secure Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2ed573 0%, #1e8449 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .version-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            background: #2ed573;
+            color: white;
+            margin: 10px 0;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            border: 2px solid #17a2b8;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .info strong {
+            color: #0c5460;
+        }
+        
+        .stats {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            color: white;
+            text-align: center;
+        }
+        
+        .comment-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid #2ed573;
+        }
+        
+        .comment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .comment-author {
+            font-weight: 600;
+            color: #2ed573;
+            font-size: 1.1em;
+        }
+        
+        .comment-timestamp {
+            color: #999;
+            font-size: 0.9em;
+        }
+        
+        .comment-text {
+            color: #333;
+            line-height: 1.6;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+        
+        .no-comments {
+            background: white;
+            border-radius: 15px;
+            padding: 50px;
+            text-align: center;
+            color: #999;
+        }
+        
+        .no-comments-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: #2ed573;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #26b861;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 213, 115, 0.4);
+        }
+        
+        .btn-danger {
+            background: #ff4757;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #e84118;
+            transform: translateY(-2px);
+        }
+        
+        .security-indicator {
+            background: #e8f8f5;
+            border: 2px solid #2ed573;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .security-indicator strong {
+            color: #2ed573;
+            font-size: 1.2em;
+        }
+        
+        .security-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .feature {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+        }
+        
+        .feature-icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+        
+        .feature-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .feature-desc {
+            font-size: 0.85em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💬 All Comments</h1>
+            <span class="version-badge">✅ SECURE VERSION</span>
+            
+            <div class="info">
+                <strong>🛡️ XSS Protection Active!</strong><br>
+                This page uses proper output encoding (auto-escaping enabled).<br>
+                All user input is safely displayed as text - scripts cannot execute!
+            </div>
+            
+            <div class="stats">
+                📊 Total Comments: <strong>{{ comments|length }}</strong>
+            </div>
+        </div>
+        
+        {% if comments %}
+            {% for comment in comments %}
+            <div class="comment-card">
+                <div class="comment-header">
+                    <span class="comment-author">👤 {{ comment.username }}</span>
+                    <span class="comment-timestamp">🕐 {{ comment.timestamp }}</span>
+                </div>
+                <div class="comment-text">
+                    {# SECURITY FIX: No | safe filter - auto-escaping is enabled #}
+                    {# HTML/JavaScript is encoded as text, not executed #}
+                    {# < becomes &lt;, > becomes &gt;, etc. #}
+                    {{ comment.text }}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-comments">
+                <div class="no-comments-icon">🤷</div>
+                <h2>No comments yet!</h2>
+                <p>Be the first to leave a comment.</p>
+            </div>
+        {% endif %}
+        
+        <div class="security-indicator">
+            <strong>🔒 SECURITY IMPLEMENTATION</strong><br>
+            <p style="margin-top: 10px;">
+                The code above uses: <code style="background: #333; color: #2ed573; padding: 5px 10px; border-radius: 5px;">{{ '{{' }} comment.text {{ '}}' }}</code>
+            </p>
+            <p style="margin-top: 10px; font-size: 0.9em;">
+                Jinja2's auto-escaping encodes special characters.<br>
+                Scripts are displayed as text, not executed!
+            </p>
+            
+            <div class="security-features">
+                <div class="feature">
+                    <div class="feature-icon">🔐</div>
+                    <div class="feature-title">Output Encoding</div>
+                    <div class="feature-desc">Auto-escaping converts HTML to safe text</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🛡️</div>
+                    <div class="feature-title">Content Security Policy</div>
+                    <div class="feature-desc">CSP headers block inline scripts</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🚫</div>
+                    <div class="feature-title">X-XSS-Protection</div>
+                    <div class="feature-desc">Browser XSS filter enabled</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">X-Frame-Options</div>
+                    <div class="feature-desc">Prevents clickjacking attacks</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <a href="/" class="btn btn-primary">← Back to Form</a>
+            <a href="/clear" class="btn btn-danger" onclick="return confirm('Clear all comments?')">🗑️ Clear All</a>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px; color: white;">
+            <a href="http://localhost:5000/comments" style="color: white; text-decoration: underline;">
+                ← Compare with Vulnerable Version (Port 5000)
+            </a>
+        </div>
+    </div>
+</body>
+</html>

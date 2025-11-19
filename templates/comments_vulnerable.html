@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comments - Vulnerable Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .version-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            background: #ff4757;
+            color: white;
+            margin: 10px 0;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .warning strong {
+            color: #856404;
+        }
+        
+        .stats {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            color: white;
+            text-align: center;
+        }
+        
+        .comment-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .comment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .comment-author {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 1.1em;
+        }
+        
+        .comment-timestamp {
+            color: #999;
+            font-size: 0.9em;
+        }
+        
+        .comment-text {
+            color: #333;
+            line-height: 1.6;
+            word-wrap: break-word;
+        }
+        
+        .no-comments {
+            background: white;
+            border-radius: 15px;
+            padding: 50px;
+            text-align: center;
+            color: #999;
+        }
+        
+        .no-comments-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-danger {
+            background: #ff4757;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #e84118;
+            transform: translateY(-2px);
+        }
+        
+        .vulnerability-indicator {
+            background: #ffe5e5;
+            border: 2px dashed #ff4757;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .vulnerability-indicator strong {
+            color: #ff4757;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💬 All Comments</h1>
+            <span class="version-badge">⚠️ VULNERABLE VERSION</span>
+            
+            <div class="warning">
+                <strong>🚨 XSS Vulnerability Active!</strong><br>
+                This page renders user input with <code>| safe</code> filter - bypassing auto-escaping.<br>
+                Any JavaScript submitted will execute in your browser!
+            </div>
+            
+            <div class="stats">
+                📊 Total Comments: <strong>{{ comments|length }}</strong>
+            </div>
+        </div>
+        
+        {% if comments %}
+            {% for comment in comments %}
+            <div class="comment-card">
+                <div class="comment-header">
+                    <span class="comment-author">👤 {{ comment.username }}</span>
+                    <span class="comment-timestamp">🕐 {{ comment.timestamp }}</span>
+                </div>
+                <div class="comment-text">
+                    {# VULNERABILITY: The | safe filter disables auto-escaping #}
+                    {# This allows HTML and JavaScript to be executed #}
+                    {{ comment.text | safe }}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-comments">
+                <div class="no-comments-icon">🤷</div>
+                <h2>No comments yet!</h2>
+                <p>Be the first to leave a comment (or an XSS payload).</p>
+            </div>
+        {% endif %}
+        
+        <div class="vulnerability-indicator">
+            <strong>🔓 VULNERABILITY DEMONSTRATION</strong><br>
+            <p style="margin-top: 10px;">
+                The code above uses: <code style="background: #333; color: #ff6b6b; padding: 5px 10px; border-radius: 5px;">{{ '{{' }} comment.text | safe {{ '}}' }}</code>
+            </p>
+            <p style="margin-top: 10px; font-size: 0.9em;">
+                This tells Jinja2 to trust the content and render it as HTML.<br>
+                Any <code>&lt;script&gt;</code> tags or malicious HTML will execute!
+            </p>
+        </div>
+        
+        <div class="button-group">
+            <a href="/" class="btn btn-primary">← Back to Form</a>
+            <a href="/clear" class="btn btn-danger" onclick="return confirm('Clear all comments?')">🗑️ Clear All</a>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px; color: white;">
+            <a href="http://localhost:5001/comments" style="color: white; text-decoration: underline;">
+                Compare with Secure Version (Port 5001) →
+            </a>
+        </div>
+    </div>
+</body>
+</html>

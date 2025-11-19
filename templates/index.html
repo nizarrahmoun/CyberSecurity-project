@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guestbook - XSS Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .version-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .vulnerable {
+            background: #ff4757;
+            color: white;
+        }
+        
+        .secure {
+            background: #2ed573;
+            color: white;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .warning-icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+        
+        .warning-text {
+            flex: 1;
+        }
+        
+        .warning-text h3 {
+            color: #856404;
+            margin-bottom: 5px;
+        }
+        
+        .warning-text p {
+            color: #856404;
+            font-size: 0.9em;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            border: 2px solid #17a2b8;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .info h3 {
+            color: #0c5460;
+            margin-bottom: 5px;
+        }
+        
+        .info p {
+            color: #0c5460;
+            font-size: 0.9em;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f1f3f5;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 Guestbook</h1>
+            {% if app_version == 'vulnerable' %}
+                <span class="version-badge vulnerable">⚠️ VULNERABLE VERSION</span>
+            {% else %}
+                <span class="version-badge secure">✅ SECURE VERSION</span>
+            {% endif %}
+        </div>
+        
+        {% if app_version == 'vulnerable' %}
+        <div class="warning">
+            <div class="warning-icon">⚠️</div>
+            <div class="warning-text">
+                <h3>Educational Demo</h3>
+                <p>This version contains intentional XSS vulnerabilities. For demonstration purposes only!</p>
+            </div>
+        </div>
+        {% else %}
+        <div class="info">
+            <h3>🛡️ Protected Application</h3>
+            <p>This version implements proper output encoding and Content Security Policy (CSP) to prevent XSS attacks.</p>
+        </div>
+        {% endif %}
+        
+        <form action="/submit" method="POST">
+            <div class="form-group">
+                <label for="username">👤 Your Name (optional):</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    placeholder="Enter your name or leave blank for 'Anonymous'"
+                    maxlength="50">
+            </div>
+            
+            <div class="form-group">
+                <label for="comment">💬 Your Comment:</label>
+                <textarea 
+                    id="comment" 
+                    name="comment" 
+                    placeholder="Share your thoughts... {% if app_version == 'vulnerable' %}or try an XSS payload like <script>alert('XSS')</script>{% endif %}"
+                    required></textarea>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">📤 Post Comment</button>
+                <a href="/comments" class="btn btn-secondary">👁️ View All Comments</a>
+            </div>
+        </form>
+        
+        <div class="footer">
+            <p>🔗 <a href="/clear">Clear All Comments</a> | <a href="/comments">View Comments</a></p>
+            <p style="margin-top: 10px; font-size: 0.85em;">
+                {% if app_version == 'vulnerable' %}
+                    Running on port 5000 | <a href="http://localhost:5001" target="_blank">Switch to Secure Version (5001)</a>
+                {% else %}
+                    Running on port 5001 | <a href="http://localhost:5000" target="_blank">Switch to Vulnerable Version (5000)</a>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</body>
+</html>
