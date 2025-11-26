@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <title>Démo - Reflected XSS (Sécurisée)</title>
+    <!-- On charge notre feuille de style externe, conformément à notre CSP -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_reflected.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Démo Reflected XSS (Sécurisée)</h1>
+        <p>Le terme recherché est maintenant "reflété" de manière sécurisée.</p>
+        
+        <form class="search-form" action="/" method="GET">
+            <input type="text" name="q" placeholder="Tapez ici..." value="{{ search_term }}">
+            <button type="submit" class="btn">Rechercher</button>
+        </form>
+
+        <div class="results-section">
+            {% if search_term %}
+                <h2>Résultats pour : 
+                    {# --- COUCHE 1 : LA CORRECTION FONDAMENTALE --- #}
+                    {# On a retiré "|safe". Jinja2 va maintenant encoder automatiquement #}
+                    {# les caractères spéciaux comme <, >, ", etc. #}
+                    {{ search_term }}
+                </h2>
+            {% else %}
+                <p>Veuillez entrer un terme de recherche.</p>
+            {% endif %}
+        </div>
+        
+        <div class="warning">
+            <strong>Essayez le même payload :</strong>
+            <code>&lt;img src=x onerror="alert('Reflected XSS!')"&gt;</code>
+            <p>Le code sera affiché comme du texte inoffensif, car <code>&lt;</code> est devenu <code>&amp;lt;</code>.</p>
+        </div>
+    </div>
+</body>
+</html>

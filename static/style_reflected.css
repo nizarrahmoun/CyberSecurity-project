@@ -1,0 +1,11 @@
+ :root { --accent-color: #5bc0de; --bg-color: #eaf7fb; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1c92d2, #0086da); color: #333; margin: 0; padding: 2rem; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: white; border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.2); padding: 2.5rem; max-width: 700px; width: 100%; text-align: center; }
+        h1 { color: var(--accent-color); }
+        .search-form { display: flex; gap: 10px; margin: 2rem 0; }
+        input[type="text"] { flex-grow: 1; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; }
+        .btn { padding: 0.8rem 1.5rem; border: none; border-radius: 8px; background: var(--accent-color); color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn:hover { background: #46b8da; transform: translateY(-2px); }
+        .results-section { min-height: 50px; background: var(--bg-color); border: 2px dashed var(--accent-color); border-radius: 15px; padding: 2rem; margin-top: 2rem; }
+        .warning { background: #fff3cd; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+        code { background: #333; color: #ff6b6b; padding: 3px 6px; border-radius: 4px; }
