@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Démo DOM XSS - Single Page</title>
+    <style>
+        :root { --accent-color: #5cb85c; --bg-color: #e8f5e9; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #0e782a, #166223); color: #333; margin: 0; padding: 2rem; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: white; border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.2); padding: 2.5rem; max-width: 600px; width: 100%; text-align: center; }
+        h1 { color: var(--accent-color); }
+        .input-section { margin: 2rem 0; }
+        input[type="text"] { width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; text-align: center; font-size: 1.1em; }
+        .btn { display: block; width: 100%; margin-top: 1rem; padding: 1rem; border: none; border-radius: 8px; background: var(--accent-color); color: white; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn:hover { background: #4a9d4a; transform: translateY(-2px); }
+        .result-section { min-height: 50px; background: var(--bg-color); border: 2px dashed var(--accent-color); border-radius: 15px; padding: 2rem; margin: 2rem 0; word-wrap: break-word; }
+        #welcome-message { font-size: 1.5em; font-weight: bold; }
+        .info { background: #fff3cd; padding: 1rem; border-radius: 8px; text-align: left;}
+        code { background: #333; color: #ff6b6b; padding: 3px 6px; border-radius: 4px; font-size: 0.9em; word-wrap: break-word; }
+
+        /* --- STYLE POUR L'INDICATEUR DE VULNÉRABILITÉ --- */
+        .vulnerability-indicator {
+            background: #ffe5e5;
+            border: 2px dashed #ff4757;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 1.5rem;
+            text-align: left; /* Aligné à gauche pour la lisibilité du code */
+        }
+        
+        .vulnerability-indicator strong {
+            display: block;
+            text-align: center;
+            color: #ff4757;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        /* --- FIN DU STYLE --- */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Démo DOM-based XSS</h1>
+
+        <div class="input-section">
+            <form id="name-form">
+                <input type="text" id="name-input" placeholder="Entrez votre nom ici..." required>
+                <button type="submit" class="btn">Afficher le message</button>
+            </form>
+        </div>
+
+        <div class="result-section">
+            <div id="welcome-message">Le message de bienvenue apparaîtra ici.</div>
+        </div>
+
+        <div class="info">
+            <strong>Pour tester la faille :</strong><br>
+            Entrez ce payload dans le champ ci-dessus :
+           <code>&lt;img src=x onerror="alert('DOM XSS!')"&gt;</code>
+        </div>
+
+        <!-- --- BLOC HTML EXPLICATIF POUR DOM XSS --- -->
+        <div class="vulnerability-indicator">
+            <strong>🔓 VULNERABILITY DEMONSTRATION</strong>
+            <p>
+                La faille se trouve dans le code <strong>JavaScript</strong> de cette page, pas sur le serveur.
+            </p>
+            <p style="margin-top: 10px;">
+                Le script utilise la fonction dangereuse <code>.innerHTML</code> :
+            </p>
+            <pre><code style="display: block; padding: 10px; margin-top: 5px; background: #2d2d2d; color: #ccc; border-radius: 5px; font-size: 0.8em; white-space: pre-wrap;">
+    function displayMessage(content) {
+        // SINK (PUITS) DANGEREUX :
+        target.innerHTML = 'Bienvenue, ' + content + ' !';
+    }
+            </code></pre>
+            <p style="margin-top: 10px;">
+                <code>.innerHTML</code> interprète le texte comme du code HTML, ce qui permet à un attaquant d'exécuter son propre code dans votre navigateur.
+            </p>
+        </div>
+        <!-- --- FIN DU BLOC HTML --- -->
+    </div>
+
+    <script>
+        const form = document.getElementById('name-form');
+        const input = document.getElementById('name-input');
+        const target = document.getElementById('welcome-message');
+
+        // VULNÉRABILITÉ : Cette fonction utilise .innerHTML pour afficher le contenu
+        function displayMessage(content) {
+            // SINK (PUITS) : La donnée est écrite dans le DOM sans être nettoyée
+            target.innerHTML = 'Bienvenue, ' + content + ' !';
+        }
+
+        form.addEventListener('submit', function(event) {
+            // Empêche la page de se recharger
+            event.preventDefault(); 
+            
+            // SOURCE : On lit la donnée non fiable directement depuis le champ de saisie
+            const name = input.value;
+            
+            // On appelle la fonction vulnérable pour afficher le message
+            displayMessage(name);
+        });
+    </script>
+</body>
+</html>

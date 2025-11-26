@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Démo DOM XSS - Version Sécurisée</title>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <!-- On suppose que vous avez créé ce fichier et y avez mis le CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_dom_secure.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Démo DOM-based XSS - Défenses Actives</h1>
+        <div class="input-section">
+            <input type="text" id="name-input" placeholder="Entrez du texte ou un payload...">
+            <div class="btn-group">
+                <button id="btn-safe" class="btn safe">Afficher (Sécurisé - textContent)</button>
+                <button id="btn-sanitized" class="btn sanitized">Afficher (HTML Sanitizé - DOMPurify)</button>
+            </div>
+        </div>
+
+        <div class="result-section">
+            <div id="welcome-message">Le message de bienvenue apparaîtra ici.</div>
+        </div>
+
+        <!-- --- NOUVEAU BLOC EXPLICATIF DE SÉCURITÉ --- -->
+        <div class="security-indicator">
+            <strong>🔒 ARCHITECTURE DE DÉFENSE CÔTÉ CLIENT</strong>
+            <div class="security-features">
+                <div class="feature">
+                    <div class="feature-icon">✍️</div>
+                    <div class="feature-title">Sink Sécurisé (textContent)</div>
+                    <div class="feature-desc">La méthode la plus sûre. Elle traite toute entrée comme du texte brut, rendant l'exécution de code impossible.</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🧹</div>
+                    <div class="feature-title">Sanitization (DOMPurify)</div>
+                    <div class="feature-desc">Pour les cas nécessitant du HTML, cette bibliothèque analyse et nettoie le code, ne gardant que les balises inoffensives.</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🛡️</div>
+                    <div class="feature-title">Trusted Types (CSP)</div>
+                    <div class="feature-desc">Cette règle de navigateur moderne bloque par défaut les fonctions dangereuses comme <code>.innerHTML</code>, forçant le nettoyage du code.</div>
+                </div>
+            </div>
+        </div>
+        <!-- --- FIN DU NOUVEAU BLOC --- -->
+
+        <div class="info">
+            <strong>Testez ces payloads :</strong><br>
+            1. <code>&lt;img src=x onerror="alert('Ceci ne marchera plus')"&gt;</code><br>
+            2. <code>&lt;b onclick="alert('click me')"&gt;Cliquez ici&lt;/b&gt; en gras !</code>
+        </div>
+    </div>
+
+   <script src="{{ url_for('static', filename='main_dom_secure.js') }}"></script>
+</body>
+</html>
