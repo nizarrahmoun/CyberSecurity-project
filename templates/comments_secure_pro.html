@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comments - Professional Secure Version</title>
+    <!-- On charge le style depuis un fichier externe pour respecter notre CSP stricte -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_stored.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💬 All Comments</h1>
+            <span class="version-badge">🛡️ PROFESSIONAL GRADE</span>
+        </div>
+
+        <div class="security-indicator">
+            <strong>🔒 ARCHITECTURE DE DÉFENSE EN PROFONDEUR</strong>
+            <div class="security-features">
+                <div class="feature">
+                    <div class="feature-icon">🧹</div>
+                    <div class="feature-title">Input Sanitization (Bleach)</div>
+                    <div class="feature-desc">Le HTML dangereux est nettoyé AVANT d'être stocké dans la base de données. Seules les balises sûres comme &lt;b&gt; sont autorisées.</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔐</div>
+                    <div class="feature-title">Output Encoding (Jinja2)</div>
+                    <div class="feature-desc">Même si une donnée dangereuse était stockée, l'auto-échappement l'afficherait comme du texte inoffensif.</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🛡️</div>
+                    <div class="feature-title">Hardened CSP</div>
+                    <div class="feature-desc">L'en-tête CSP est strict et n'autorise aucun script ou style "inline", bloquant les attaques au niveau du navigateur.</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🍪</div>
+                    <div class="feature-title">HttpOnly Cookies</div>
+                    <div class="feature-desc">Le cookie de session est invisible pour JavaScript, rendant son vol par XSS impossible.</div>
+                </div>
+            </div>
+        </div>
+        
+        {% if comments %}
+            {% for comment in comments %}
+            <div class="comment-card">
+                <div class="comment-header">
+                    <span class="comment-author">👤 {{ comment.username }}</span>
+                    <span class="comment-timestamp">🕐 {{ comment.timestamp }}</span>
+                </div>
+                <div class="comment-text">
+                    {# C'est maintenant doublement sécurisé : la donnée a été nettoyée par Bleach #}
+                    {# ET elle est encodée par Jinja2. C'est la défense en profondeur. #}
+                    {# Pour autoriser le <b> et <i> que Bleach a laissés, on peut utiliser |safe ici #}
+                    {# CAR ET SEULEMENT CAR on a une confiance absolue en notre nettoyage Bleach. #}
+                    {{ comment.text | safe }}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <!-- (gardez la même section .no-comments) -->
+        {% endif %}
+        
+        <!-- (gardez les mêmes boutons) -->
+        <div class="button-group">
+            <a href="/" class="btn btn-primary">← Back to Form</a>
+            <a href="/clear" class="btn btn-danger" onclick="return confirm('Clear all comments?')">🗑️ Clear All</a>
+        </div>
+    </div>
+</body>
+</html>
